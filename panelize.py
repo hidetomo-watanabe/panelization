@@ -4,12 +4,14 @@ import random
 from PIL import Image
 
 
-def get_im_data(filedir):
+def get_im_data(FILEDIR):
     ims = []
     imwidths = []
     imheights = []
-    for filename in os.listdir(filedir):
-        im = Image.open('%s/%s' % (filedir, filename))
+    for filename in os.listdir(FILEDIR):
+        if filename == '.gitkeep':
+            continue
+        im = Image.open('%s/%s' % (FILEDIR, filename))
         ims.append(im)
         imwidths.append(im.size[0])
         imheights.append(im.size[1])
@@ -30,15 +32,21 @@ def get_random_params(CANVAS_WIDTH, CANVAS_HEIGHT):
 
 
 if __name__ == '__main__':
-    filedir = sys.argv[1]
-    output_filename = sys.argv[2]
-    paste_num = int(sys.argv[3])
+    if len(sys.argv) > 1:
+        output_filename = sys.argv[1]
+    else:
+        output_filename = 'tmp'
+    if len(sys.argv) > 2:
+        paste_num = int(sys.argv[2])
+    else:
+        paste_num = 1
 
     # const
+    FILEDIR = './files'
     CANVAS_WIDTH = 1440
     CANVAS_HEIGHT = 900
 
-    ims, imwidths, imheights = get_im_data(filedir)
+    ims, imwidths, imheights = get_im_data(FILEDIR)
     canvas = Image.new(
         'RGB', (CANVAS_WIDTH, CANVAS_HEIGHT), (0, 0, 0))
     for _ in range(paste_num):
