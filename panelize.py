@@ -57,4 +57,4 @@ if __name__ == '__main__':
                 ims[i].rotate(rotate_random),
                 (width_random, height_random))
 
-    canvas.save('%s.jpg' % output_filename, 'JPEG', quality=100, optimize=True)
+    canvas.save('%s.jpg' % output_filename, quality=100)
