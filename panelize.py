@@ -4,29 +4,29 @@ import random
 from PIL import Image
 
 
-def get_im_data(FILEDIR):
+def get_im_data(filedir):
     ims = []
     imwidths = []
     imheights = []
-    for filename in os.listdir(FILEDIR):
+    for filename in os.listdir(filedir):
         if filename == '.gitkeep':
             continue
-        im = Image.open('%s/%s' % (FILEDIR, filename))
+        im = Image.open('%s/%s' % (filedir, filename))
         ims.append(im)
         imwidths.append(im.size[0])
         imheights.append(im.size[1])
     return ims, imwidths, imheights
 
 
-def get_random_params(CANVAS_WIDTH, CANVAS_HEIGHT):
+def get_random_params(canvas_width, canvas_height):
     # const
     RANDOM_BUFFER_RATIO = 0.8
     ROTATE_MAX = 20
 
     width_random = random.randint(
-        0, CANVAS_WIDTH * RANDOM_BUFFER_RATIO)
+        0, canvas_width * RANDOM_BUFFER_RATIO)
     height_random = random.randint(
-        0, CANVAS_HEIGHT * RANDOM_BUFFER_RATIO)
+        0, canvas_height * RANDOM_BUFFER_RATIO)
     rotate_random = random.randint(-1 * ROTATE_MAX, ROTATE_MAX)
     return width_random, height_random, rotate_random
 
@@ -48,17 +48,23 @@ if __name__ == '__main__':
         output_filename = sys.argv[1]
     else:
         output_filename = 'tmp'
+    if len(sys.argv) > 2:
+        canvas_width = sys.argv[2]
+    else:
+        canvas_width = 1440
+    if len(sys.argv) > 3:
+        canvas_width = sys.argv[3]
+    else:
+        canvas_height = 900
 
     # const
     FILEDIR = './files'
-    CANVAS_WIDTH = 1440
-    CANVAS_HEIGHT = 900
     MIN_PASTE_RATIO = 0.7
     MAX_PASTE_NUM = 100
 
     ims, imwidths, imheights = get_im_data(FILEDIR)
     canvas = Image.new(
-        'RGB', (CANVAS_WIDTH, CANVAS_HEIGHT), (0, 0, 0))
+        'RGB', (canvas_width, canvas_height), (0, 0, 0))
 
     paste_count = 0
     paste_ratio = 0
@@ -66,13 +72,13 @@ if __name__ == '__main__':
         # paste
         for i in range(len(ims)):
             width_random, height_random, rotate_random = \
-                get_random_params(CANVAS_WIDTH, CANVAS_HEIGHT)
+                get_random_params(canvas_width, canvas_height)
             canvas.paste(
                 ims[i].rotate(rotate_random),
                 (width_random, height_random))
         paste_count += 1
         paste_ratio = calc_paste_ratio(canvas)
 
-    print('[INFO] PASTE COUNT: %s' % paste_count)
-    print('[INFO] PASTE RATIO: %s' % paste_ratio)
+    print('[DEBUG] PASTE COUNT: %s' % paste_count)
+    print('[DEBUG] PASTE RATIO: %s' % paste_ratio)
     canvas.save('%s.jpg' % output_filename, quality=100)
