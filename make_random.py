@@ -1,6 +1,6 @@
 import sys
 import os
-import random
+from random import randint
 from PIL import Image
 
 
@@ -18,13 +18,19 @@ def get_im_data(filedir):
     return ims, imwidths, imheights
 
 
-def get_paste_params(canvas_width, canvas_height):
-    ANGLE_MAX = 20
+def calc_paste_params(canvas_width, canvas_height):
+    MAX_ANGLE = 20
+    MAX_COMPRESSION_RATE = 10
 
-    x = random.randint(0, canvas_width)
-    y = random.randint(0, canvas_height)
-    angle = random.randint(-1 * ANGLE_MAX, ANGLE_MAX)
-    return x, y, angle
+    x = randint(0, canvas_width)
+    y = randint(0, canvas_height)
+    angle = randint(-1 * MAX_ANGLE, MAX_ANGLE)
+    rate = randint(1, MAX_COMPRESSION_RATE)
+    return x, y, angle, rate
+
+
+def compress_with_rate(im, rate):
+    return im.resize((int(im.width / rate), int(im.height / rate)))
 
 
 def calc_paste_ratio(canvas):
@@ -56,7 +62,7 @@ if __name__ == '__main__':
     # const
     FILEDIR = './files'
     MIN_PASTE_RATIO = 0.7
-    MAX_PASTE_NUM = 100
+    MAX_PASTE_NUM = 200
 
     ims, imwidths, imheights = get_im_data(FILEDIR)
     canvas = Image.new(
@@ -67,8 +73,10 @@ if __name__ == '__main__':
     while (paste_ratio < MIN_PASTE_RATIO) and (paste_count < MAX_PASTE_NUM):
         # paste
         for i in range(len(ims)):
-            x, y, angle = get_paste_params(canvas_width, canvas_height)
-            canvas.paste(ims[i].rotate(angle), (x, y))
+            x, y, angle, rate = calc_paste_params(canvas_width, canvas_height)
+            canvas.paste(
+                compress_with_rate(ims[i], rate).rotate(angle),
+                (x, y))
         paste_count += 1
         paste_ratio = calc_paste_ratio(canvas)
 
