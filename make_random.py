@@ -18,17 +18,13 @@ def get_im_data(filedir):
     return ims, imwidths, imheights
 
 
-def get_random_params(canvas_width, canvas_height):
-    # const
-    RANDOM_BUFFER_RATIO = 0.8
-    ROTATE_MAX = 20
+def get_paste_params(canvas_width, canvas_height):
+    ANGLE_MAX = 20
 
-    width_random = random.randint(
-        0, canvas_width * RANDOM_BUFFER_RATIO)
-    height_random = random.randint(
-        0, canvas_height * RANDOM_BUFFER_RATIO)
-    rotate_random = random.randint(-1 * ROTATE_MAX, ROTATE_MAX)
-    return width_random, height_random, rotate_random
+    x = random.randint(0, canvas_width)
+    y = random.randint(0, canvas_height)
+    angle = random.randint(-1 * ANGLE_MAX, ANGLE_MAX)
+    return x, y, angle
 
 
 def calc_paste_ratio(canvas):
@@ -71,11 +67,8 @@ if __name__ == '__main__':
     while (paste_ratio < MIN_PASTE_RATIO) and (paste_count < MAX_PASTE_NUM):
         # paste
         for i in range(len(ims)):
-            width_random, height_random, rotate_random = \
-                get_random_params(canvas_width, canvas_height)
-            canvas.paste(
-                ims[i].rotate(rotate_random),
-                (width_random, height_random))
+            x, y, angle = get_paste_params(canvas_width, canvas_height)
+            canvas.paste(ims[i].rotate(angle), (x, y))
         paste_count += 1
         paste_ratio = calc_paste_ratio(canvas)
 
